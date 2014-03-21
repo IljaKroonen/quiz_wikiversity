@@ -1,4 +1,4 @@
-package org.tssap.questions.impl.tests;
+package org.tsaap.questions.impl.tests;
 
 import static org.junit.Assert.*;
 
