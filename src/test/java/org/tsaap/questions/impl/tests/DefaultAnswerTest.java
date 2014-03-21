@@ -37,7 +37,9 @@ public class DefaultAnswerTest {
 	public void hashCodeTest(){
 		
 		mDefaultAnswer.setIdentifier("Identifier");
-		int hashCode = mDefaultAnswer.hashCode();
+		
+		String identifier = "Identifier";
+		int hashCode = identifier.hashCode();
 		assertEquals(hashCode, mDefaultAnswer.hashCode());
 	}
 	
