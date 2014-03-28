@@ -11,21 +11,33 @@ import org.tsaap.questions.Question;
 import org.tsaap.questions.impl.DefaultQuestion;
 import org.tsaap.questions.impl.DefaultQuiz;
 
+/**
+ * Test class for DefaultQuizTest.
+ * 
+ * @author Cassim Ketfi
+ * 
+ */
 public class DefaultQuizTest {
 	
 	private DefaultQuiz mDefaultQuiz;
 	
+	/**
+	 * Initialization run before each test.
+	 */
 	@Before
-	public void setUp() {
+	public final void setUp() {
 		mDefaultQuiz = new DefaultQuiz();
 	}
-
+	
+	/**
+	 * Tests if the list of questions is handled correctly.
+	 */
 	@Test
-	public void attributesTest() {
+	public final void attributesTest() {
 		Question mDefaultQuestion = new DefaultQuestion();
 		List<Question> questionList = new ArrayList<Question>();
 		mDefaultQuiz.addQuestion(mDefaultQuestion);
 		questionList.add(mDefaultQuestion);
-		assertEquals(questionList,mDefaultQuiz.getQuestionList());
+		assertEquals(questionList, mDefaultQuiz.getQuestionList());
 	}
 }
