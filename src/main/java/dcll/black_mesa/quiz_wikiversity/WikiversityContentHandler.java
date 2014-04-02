@@ -14,6 +14,7 @@
 package dcll.black_mesa.quiz_wikiversity;
 
 import org.apache.log4j.Logger;
+import org.tsaap.questions.Answer;
 import org.tsaap.questions.Question;
 import org.tsaap.questions.QuestionType;
 import org.tsaap.questions.QuizContentHandler;
@@ -23,16 +24,12 @@ import org.tsaap.questions.impl.DefaultAnswerBlock;
 import org.tsaap.questions.impl.DefaultQuestion;
 import org.tsaap.questions.impl.DefaultQuiz;
 
-/*
- * TODO This code is valid for a Gift reader. It will probably need modifications to adapt it as a handler for the
- * Wikiversity reader.
- */
-
 /**
  * @author franck Silvestre
  */
-public class WikiversityContentHandler implements QuizContentHandler {
 
+public class WikiversityContentHandler implements QuizContentHandler {
+	
 	/**
 	 * Get the quiz.
 	 * 
@@ -57,10 +54,18 @@ public class WikiversityContentHandler implements QuizContentHandler {
 
 	/**
 	 * Receive notification of the beginning of a question.
+	 * 
+	 * @param type
+	 *            Type of the question
 	 */
-	public final void onStartQuestion() {
+	public final void onStartQuestion(final String type) {
 		currentQuestion = new DefaultQuestion();
-		currentQuestion.setQuestionType(QuestionType.MultipleChoice);
+
+		if ("()".equals(type)) {
+			currentQuestion.setQuestionType(QuestionType.ExclusiveChoice);
+		} else {
+			currentQuestion.setQuestionType(QuestionType.MultipleChoice);
+		}
 	}
 
 	/**
@@ -93,12 +98,25 @@ public class WikiversityContentHandler implements QuizContentHandler {
 	public final void onStartAnswerBlock() {
 		currentAnswerBlock = new DefaultAnswerBlock();
 		answerCounter = 0;
+		rightAnswerCounter = 0;
 	}
 
 	/**
 	 * Receive notification of the end of an answer fragment.
 	 */
 	public final void onEndAnswerBlock() {
+
+		if (currentQuestion.getQuestionType() == QuestionType.MultipleChoice) {
+
+			for (Answer answer : currentAnswerBlock.getAnswerList()) {
+
+				if (answer.getPercentCredit() == 100f) {
+
+					((DefaultAnswer) answer).setPercentCredit(100f / rightAnswerCounter);
+				}
+
+			}
+		}
 		currentQuestion.addAnswerBlock(currentAnswerBlock);
 		currentAnswerBlock = null;
 	}
@@ -110,11 +128,14 @@ public class WikiversityContentHandler implements QuizContentHandler {
 	 *            Prefix of the answer.
 	 */
 	public final void onStartAnswer(final String prefix) {
+
 		currentAnswer = new DefaultAnswer();
 		currentAnswer.setIdentifier(String.valueOf(answerCounter++));
-		if ("=".equals(prefix)) {
+
+		if ("+".equals(prefix)) {
+
 			currentAnswer.setPercentCredit(100f);
-			currentQuestion.setQuestionType(QuestionType.ExclusiveChoice);
+			rightAnswerCounter++;
 		} else {
 			currentAnswer.setPercentCredit(0f);
 		}
@@ -197,4 +218,5 @@ public class WikiversityContentHandler implements QuizContentHandler {
 	private boolean answerCreditIsBeenBuilt;
 	private boolean feedbackIsBeenBuilt;
 	private int answerCounter;
+	private int rightAnswerCounter;
 }

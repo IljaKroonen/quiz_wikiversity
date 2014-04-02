@@ -18,7 +18,7 @@ public interface QuizContentHandler {
     /**
      * Receive notification of the beginning of a question
      */
-    public void onStartQuestion();
+    public void onStartQuestion(String type);
 
     /**
      * Receive notification of the end of a question
