@@ -1,10 +1,18 @@
 package org.tsaap.questions;
 
+
 /**
  * @author franck Silvestre
  */
 public interface QuizContentHandler {
 
+	/**
+	 * Get the quiz.
+	 * 
+	 * @return The quiz.
+	 */
+	public Quiz getQuiz();
+	
     /**
      * Receive notification of the beginning of a quiz
      */

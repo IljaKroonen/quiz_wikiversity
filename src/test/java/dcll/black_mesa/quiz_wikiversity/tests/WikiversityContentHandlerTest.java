@@ -308,7 +308,6 @@ public class WikiversityContentHandlerTest {
 		final String expectedQuestionTextBlock = "Question text block";
 
 		mContentHandler.onStartQuiz();
-		mContentHandler.onEndQuiz();
 
 		mContentHandler.onStartQuestion("[]");
 
@@ -342,6 +341,8 @@ public class WikiversityContentHandlerTest {
 		mContentHandler.onString(expectedQuestionTextBlock);
 
 		mContentHandler.onEndQuestion();
+		
+		mContentHandler.onEndQuiz();
 
 		Quiz quiz = mContentHandler.getQuiz();
 

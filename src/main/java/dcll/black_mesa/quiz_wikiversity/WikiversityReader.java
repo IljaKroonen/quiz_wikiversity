@@ -2,7 +2,6 @@ package dcll.black_mesa.quiz_wikiversity;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 
 import org.tsaap.questions.QuizContentHandler;
 import org.tsaap.questions.QuizReader;
@@ -15,6 +14,17 @@ import org.tsaap.questions.QuizReaderException;
  * 
  */
 public class WikiversityReader implements QuizReader {
+	
+	private QuizContentHandler mContentHandler;
+	
+	/**
+	 * Default constructor for WikiversityReader.
+	 */
+	public WikiversityReader() {
+		
+		mContentHandler = new WikiversityContentHandler();
+	}
+	
 	/**
 	 * Parses a quiz in the wikiversity format.
 	 * 
@@ -25,81 +35,133 @@ public class WikiversityReader implements QuizReader {
 	 * @throws QuizReaderException
 	 *             A parsing error occured.
 	 */
-	public void parse(final Reader reader) throws IOException, QuizReaderException {
-		skip(reader, '{');
-		String question = getString(reader);
-		System.out.println("Question: " + question);
-		skip(reader, "|type=\"");
-		int type = getQuestionType(reader);
-		System.out.println("Type: " + type);
-		skip(reader, "\"}\n");
+	public final void parse(final Reader reader) throws IOException, QuizReaderException {
+		
+		String title, type;
 		int prefix;
-		while((prefix = getAnswerPrefix(reader)) != -1) {
+		
+		mContentHandler = (WikiversityContentHandler) getQuizContentHandler();
+		mContentHandler.onStartQuiz();
+
+		skip(reader, '{');
+		
+		// Get the title
+		title = getString(reader);
+		
+		// Get the question type
+		skip(reader, "|type=\"");
+		type = getQuestionType(reader);
+		
+		mContentHandler.onStartQuestion(type);
+		
+		
+		mContentHandler.onStartTitle();
+		mContentHandler.onString(title);
+		mContentHandler.onEndTitle();
+		
+		mContentHandler.onStartAnswerBlock();
+
+		skip(reader, "\"}\n");
+		
+		while ((prefix = getAnswerPrefix(reader)) != -1) {
+			
 			System.out.println("Answer found");
-			System.out.println("Prefix: " + prefix);
-			System.out.println("Answer: " + getString(reader));
+			
+			mContentHandler.onStartAnswer(String.valueOf((char) prefix));
+			
+			// Set answer text
+			mContentHandler.onString(getString(reader));
+			
+			mContentHandler.onEndAnswer();
+
 		}
+		
+		mContentHandler.onEndAnswerBlock();
+		
+		mContentHandler.onEndQuestion();
+		
+		mContentHandler.onEndQuiz();
+		
 		System.out.println("Parsing done");
 	}
 
 	/**
-	 * Setter for the content handler of this reader.
+	 * Getter for the content handler of this reader.
 	 * 
 	 * @return The content handler.
 	 */
 	public final QuizContentHandler getQuizContentHandler() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return mContentHandler;
 	}
 
-	private void skip(final Reader reader, char symbol) throws IOException, QuizReaderException {
+	private void skip(final Reader reader, final char symbol) throws IOException, QuizReaderException {
+		
 		int currentChar;
+		
 		while ((currentChar = reader.read()) != -1) {
+			
 			if (currentChar == symbol) {
+				
 				return;
 			}
 		}
+		
 		throw new QuizReaderException("Expected symbol " + symbol + " was not found");
 	}
 
 	private void skip(final Reader reader, final String symbol) throws IOException, QuizReaderException {
+		
 		for (int i = 0; i < symbol.length(); i++) {
+			
 			skip(reader, symbol.charAt(i));
 		}
 	}
 
 	private String getString(final Reader reader) throws IOException, QuizReaderException {
+		
 		String ret = "";
-		int currentChar;
-		while ((currentChar = reader.read()) != -1 && currentChar != '\n') {
+		int currentChar = reader.read();
+		
+		while (currentChar != -1 && currentChar != '\n') {
+			
 			ret += (char) currentChar;
+			currentChar = reader.read();
 		}
+		
 		if (ret.equals("")) {
+			
 			throw new QuizReaderException("Empty string read");
 		}
+		
 		return ret;
 	}
 
-	private int getQuestionType(final Reader reader) throws IOException, QuizReaderException {
-		int c1 = reader.read();
-		int c2 = reader.read();
-		if (c1 == '(' && c2 == ')') {
-			return 0;
+	private String getQuestionType(final Reader reader) throws IOException, QuizReaderException {
+		
+		char[] type = new char[2];
+		
+		if (reader.read(type, 0, 2) == 2) {
+			
+			return new String(type);
 		}
-		if (c1 == '[' && c2 == ']') {
-			return 1;
-		}
+		
 		throw new QuizReaderException("Question type was expected but not found");
 	}
 
 	private int getAnswerPrefix(final Reader reader) throws IOException, QuizReaderException {
+		
 		int c = reader.read();
+		
 		if (c == '-') {
-			return 0;
+			
+			return c;
 		}
 		if (c == '+') {
-			return 1;
+			
+			return c;
 		}
+		
 		return -1;
 	}
 }
