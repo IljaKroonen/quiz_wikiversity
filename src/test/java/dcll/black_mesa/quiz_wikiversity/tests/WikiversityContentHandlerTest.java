@@ -335,6 +335,9 @@ public class WikiversityContentHandlerTest {
 
 		mContentHandler.onEndAnswer();
 
+		// Should not do anything, used to get 100% test coverage
+		mContentHandler.onString("");
+		
 		mContentHandler.onEndAnswerBlock();
 
 		// Question text block
@@ -342,6 +345,9 @@ public class WikiversityContentHandlerTest {
 
 		mContentHandler.onEndQuestion();
 		
+		// Should not do anything, used to get 100% test coverage
+		mContentHandler.onString("");
+				
 		mContentHandler.onEndQuiz();
 
 		Quiz quiz = mContentHandler.getQuiz();
