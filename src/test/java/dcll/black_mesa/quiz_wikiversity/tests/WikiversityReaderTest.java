@@ -1,6 +1,7 @@
 package dcll.black_mesa.quiz_wikiversity.tests;
 
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
@@ -43,20 +44,31 @@ public class WikiversityReaderTest {
 	 */
 	@Test
 	public final void parseTest() {
-
-		/*String questionString = "{Question\n"
-				+ "|type=\"()\"}\n"
-				+ "+ The correct answer.\n"
-				+ "- Distractor.\n"
-				+ "- Distractor.\n"
-				+ "- Distractor.";*/
 		
-		String questionString = "{Question\n"
+		/*String questionString = "{Question\n"
+				+ "|type=\"[]\"}\n"
+				+ "+ Correct answer.\n"
+				+ "- Incorrect answer.\n"
+				+ "+ Correct answer.\n"
+				+ "- Incorrect answer.\n"
+				+ "{Question\n"
 				+ "|type=\"[]\"}\n"
 				+ "+ Correct answer.\n"
 				+ "- Incorrect answer.\n"
 				+ "+ Correct answer.\n"
 				+ "- Incorrect answer.";
+		*/
+		String questionString = "{La Suisse est membre de l'Union Européenne.\n"
+				+ "|type=\"()\"}\n"
+				+ "- Vrai.\n"
+				+ "+ Faux.\n"
+				+ "{Sélectionnez les langages dynamiques\n"
+				+ "|type=\"[]\"}\n"
+				+ "+ Clojure.\n"
+				+ "- Java.\n"
+				+ "+ Groovy.\n"
+				+ "- Scala.";
+		
 		Reader reader = new StringReader(questionString);
 		
 		try {
@@ -75,10 +87,10 @@ public class WikiversityReaderTest {
 		
 		for (Question question:quiz.getQuestionList()) {
 			
-			//System.out.println("Question : " + question.getTitle());
+			System.out.println("Question : " + question.getTitle());
 			assertNotNull(question.getTitle());
 			
-			//System.out.println("Type : " + question.getQuestionType());
+			System.out.println("Type : " + question.getQuestionType());
 			assertNotNull(question.getQuestionType());
 			
 			List<AnswerBlock> answerBlockList = question.getAnswerBlockList();
@@ -91,13 +103,87 @@ public class WikiversityReaderTest {
 				
 				for (Answer answer:answerList) {
 					
-					//System.out.print("Answer : " + answer.getTextValue());
+					System.out.print("Answer : " + answer.getTextValue());
 					assertNotNull(answer.getTextValue());
 					
-					//System.out.println(" - Credit : " + answer.getPercentCredit());
+					System.out.println(" - Credit : " + answer.getPercentCredit());
 					assertNotNull(answer.getPercentCredit());
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Test for the private skip function.
+	 */
+	@Test
+	public final void skipTest() {
+		
+		String testString = "A";
+		Reader reader = new StringReader(testString);
+		
+		try {
+			mWikiversityReader.parse(reader);
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail();
+			return;
+		} catch (QuizReaderException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+		fail();
+	}
+	
+	/**
+	 * Test for the private getString function.
+	 */
+	@Test
+	public final void getStringTest() {
+		
+		String testString = "{";
+		Reader reader = new StringReader(testString);
+		
+		try {
+			mWikiversityReader.parse(reader);
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail();
+			return;
+		} catch (QuizReaderException e) {
+			e.printStackTrace();
+			
+			assertEquals("Empty string read", e.getMessage());
+			return;
+		}
+		
+		fail();
+	}
+	
+	/**
+	 * Test for the private getQuestionType function.
+	 */
+	@Test
+	public final void getQuestionTypeTest() {
+		
+		String testString = "{Question\n"
+				+ "|type=\"[";
+		Reader reader = new StringReader(testString);
+		
+		try {
+			mWikiversityReader.parse(reader);
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail();
+			return;
+		} catch (QuizReaderException e) {
+			e.printStackTrace();
+			
+			assertEquals("Question type was expected but not found", e.getMessage());
+			return;
+		}
+		
+		fail();
 	}
 }

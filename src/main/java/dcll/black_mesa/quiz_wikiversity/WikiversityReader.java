@@ -64,8 +64,14 @@ public class WikiversityReader implements QuizReader {
 
 			skip(reader, "\"}\n");
 
-			while ((prefix = reader.read()) != -1) {
+			prefix = reader.read();
+			while (prefix != -1) {
 
+				if (prefix == '{') {
+					
+					break;
+				}
+				
 				System.out.println("Answer found");
 
 				mContentHandler.onStartAnswer(String.valueOf((char) prefix));
@@ -75,6 +81,7 @@ public class WikiversityReader implements QuizReader {
 
 				mContentHandler.onEndAnswer();
 
+				prefix = reader.read();
 			}
 
 			mContentHandler.onEndAnswerBlock();
@@ -83,13 +90,6 @@ public class WikiversityReader implements QuizReader {
 
 			if (prefix == -1) {
 				break;
-			}
-			if (prefix != '{') {
-				try {
-					skip(reader, '{');
-				} catch (Exception e) {
-					break;
-				}
 			}
 		}
 
