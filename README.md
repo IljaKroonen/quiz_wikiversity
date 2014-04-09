@@ -7,7 +7,7 @@ Just import as Maven project.
 
 ## Contributing
 
-https://docs.google.com/document/d/1fz2V9gtVy-Y8ewBHymWerEZOt0z2ctFSZ6w8CDuJmp8/edit?usp=sharing
+https://docs.google.com/document/d/1nLt8gprS40oULz4NQUK484c_4Hl5HEpt8oQIihNGvy8/edit?usp=sharing
 
 ## Credits
 
