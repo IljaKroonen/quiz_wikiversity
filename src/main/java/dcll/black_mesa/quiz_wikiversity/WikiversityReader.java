@@ -68,10 +68,10 @@ public class WikiversityReader implements QuizReader {
 			while (prefix != -1) {
 
 				if (prefix == '{') {
-					
+
 					break;
 				}
-				
+
 				System.out.println("Answer found");
 
 				mContentHandler.onStartAnswer(String.valueOf((char) prefix));
@@ -135,7 +135,9 @@ public class WikiversityReader implements QuizReader {
 		int currentChar = reader.read();
 
 		while (currentChar != -1 && currentChar != '\n') {
-
+			// This generates a performance issue in findbug. While this use of concatenations is truly bad for
+			// performances, it offers great readability, and performance is not one of the main objectives in this
+			// project.
 			ret += (char) currentChar;
 			currentChar = reader.read();
 		}
